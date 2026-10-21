@@ -92,7 +92,7 @@ Scores every local-storage entry before writing. Wallets, tokens, and seed phras
 
 > 🚨 **YOU ARE RESPONSIBLE FOR YOUR OWN USE.** This software is published for authorized security research and educational analysis only. The author does **not** condone, support, or facilitate unauthorized access to computer systems. If you use Phantom Elevator against a system you are not explicitly authorized to test, **you** commit a crime and **you alone** bear the legal consequence.
 
-> 📜 **NO WARRANTY, NO LIABILITY.** This software is provided "as is", without warranty of any kind, express or implied. The author is not liable for any damages, legal action, or consequence arising from use or misuse. See [LICENSE](LICENSE).
+> 📜 **NO WARRANTY, NO LIABILITY.** This software is provided "as is", without warranty of any kind, express or implied. The author is not liable for any damages, legal action, or consequence arising from use or misuse.
 
 > 🤝 **REPORTING A VULNERABILITY.** If you are a browser vendor or security researcher who has found a flaw this tool touches, contact the author via Discord — responsible disclosure is welcome, abuse is not.
 
