@@ -23,11 +23,11 @@
 
 <br><br>
 
-**DPAPI + V20 BYPASS** &nbsp;·&nbsp; **COM ELEVATION BRIDGE** &nbsp;·&nbsp; **RANKED OUTPUT**
+**DPAPI + V20 BYPASS** &nbsp;·&nbsp; **COM ELEVATION BRIDGE** &nbsp;·&nbsp; **SIGNAL-FIRST RANKING**
 
 <br>
 
-[**🚀 Quickstart**](#quickstart) · [**🖥️ CLI**](#cli) · [**🌐 Browsers**](#browsers) · [**⚡ Bypass**](#bypass) · [**🛡️ Obfuscation**](#obfuscation) · [**⚠️ Limitations**](#limitations)
+[**⚠️ Authorized Use**](#authorized-use) · [**🚀 Quickstart**](#quickstart) · [**🖥️ CLI**](#cli) · [**🌐 Browsers**](#browsers) · [**⚡ Bypass**](#bypass) · [**🛡️ Obfuscation**](#obfuscation) · [**⚠️ Limitations**](#limitations)
 
 </div>
 
@@ -36,10 +36,9 @@
 > [!TIP]
 > **Want a standalone `.exe` — no Python, no compiler on the target?**
 >
-> Use **[Hidden-Rhythm/abe_bypass](https://github.com/Hidden-Rhythm/abe_bypass)**.
-> That repo ships `build_dll.py` and `build_exe.py`, which produce a ~13 MB self-contained Windows binary with the ABE DLLs embedded.
+> Download the prebuilt Windows binary from **[Hidden-Rhythm/abe_bypass releases](https://github.com/Hidden-Rhythm/abe_bypass/releases/latest)**.
 >
-> **This repo** is one file. `python phantom_elevator.py`. ABE compiles at runtime with gcc.
+> Same tool, same CLI, same output. That repo also ships `build_dll.py` and `build_exe.py` if you want to build the exe yourself. This repo is the single-file Python edition.
 
 ---
 
@@ -152,8 +151,8 @@ phantom_elevator.py
         │
         ├─ 02. Verify the APPB prefix, strip it, keep the sealed blob
         │
-        ├─ 03. Resolve the ABE DLL for this browser
-        │        dlls/<name>.dll if present, else compile from ABE_TEMPLATE
+        ├─ 03. Compile a tiny C DLL
+        │        CLSID + IID_V1 + IID_V2 + vtable offset for the target browser
         │
         ├─ 04. Ensure the browser's elevation service is RUNNING
         │
@@ -172,9 +171,9 @@ phantom_elevator.py
 
 <br>
 
-Each supported Chromium build ships its own `cls_id`, `iid_v1` / `iid_v2`, elevation service name, and `vtable_offset` — all carried in the `BROWSERS` table. With no `dlls/` folder present, the DLL is compiled at runtime with MinGW-w64 `gcc` or MSVC `cl`, whichever is found. If neither exists, the ABE path disables itself and `v10` extraction continues.
+Each supported Chromium build ships its own `cls_id`, `iid_v1` / `iid_v2`, elevation service name, and `vtable_offset` — all carried in the `BROWSERS` table. The DLL is compiled at runtime with MinGW-w64 `gcc` or MSVC `cl`, whichever is found. If neither is present, the ABE path disables itself and `v10` extraction continues.
 
-> 💡 **Optional speed-up:** drop a `dlls/` folder containing `chrome.dll`, `chrome_beta.dll`, `brave.dll`, `edge.dll`, `avast.dll` beside `phantom_elevator.py` and the runtime compile is skipped. [abe_bypass](https://github.com/Hidden-Rhythm/abe_bypass) ships the builder.
+> 💡 **Optional:** drop a `dlls/` folder containing `chrome.dll`, `chrome_beta.dll`, `brave.dll`, `edge.dll`, `avast.dll` beside `phantom_elevator.py` and the runtime compile is skipped. Build them with `build_dll.py` from [abe_bypass](https://github.com/Hidden-Rhythm/abe_bypass).
 
 ---
 
@@ -286,28 +285,7 @@ git clone https://github.com/Hidden-Rhythm/abe-bypass.git
 cd abe-bypass
 ```
 
-### 2️⃣ (Optional) Prebuilt ABE DLLs
-
-Skip this step if you're on a machine with gcc — `phantom_elevator.py` compiles the ABE DLL at runtime and works fine. Do this only if you want to skip the runtime compile (faster first run, no gcc needed at all):
-
-```bash
-git clone https://github.com/Hidden-Rhythm/abe_bypass.git
-mkdir dlls
-cp abe_bypass/dlls/*.dll dlls/
-```
-
-Or build the DLLs yourself — `abe_bypass/build_dll.py` compiles one per Chromium build using `ABE_TEMPLATE` from this repo's `phantom_elevator.py`:
-
-```bash
-cd abe_bypass
-python build_dll.py
-cd ..
-cp abe_bypass/dlls/*.dll dlls/
-```
-
-Once `dlls/` exists beside `phantom_elevator.py`, `_resolve_abe_dll` reads from it directly and the runtime compile is skipped.
-
-### 3️⃣ Run
+### 2️⃣ Run
 
 ```bash
 python phantom_elevator.py
@@ -315,7 +293,7 @@ python phantom_elevator.py
 
 First run installs `pycryptodome` and `python-snappy` if missing, then attempts a gcc install via `winget` → `choco` → `scoop` (only if `dlls/` is absent).
 
-### 4️⃣ Read the Output
+### 3️⃣ Read the Output
 
 ```text
 out/
@@ -611,7 +589,7 @@ When prompted, provide the path to `phantom_elevator.py`. Accept the default out
 
 The obfuscator reports a SHA-256 build fingerprint and per-stage timings, so every hardened build is traceable to its source.
 
-> ⚠️ **Obfuscating breaks the runtime ABE compile path.** The generated code object can't be compiled to C by gcc at runtime. If you need ABE on an obfuscated build, drop a prebuilt `dlls/` folder beside the output — build it with [`build_dll.py`](https://github.com/Hidden-Rhythm/abe_bypass/blob/main/build_dll.py).
+> ⚠️ **Obfuscating breaks the runtime ABE compile path.** The generated code object can't be compiled to C by gcc at runtime. If you need ABE on an obfuscated build, drop a prebuilt `dlls/` folder beside the output — build it with `build_dll.py` from [abe_bypass](https://github.com/Hidden-Rhythm/abe_bypass).
 
 ---
 
@@ -709,7 +687,7 @@ Optional companion files, sourced from [abe_bypass](https://github.com/Hidden-Rh
     └── avast.dll
 ```
 
-Drop `dlls/` next to `phantom_elevator.py` to skip runtime compile. Copy `build_dll.py` here too if you want to regenerate them without leaving this repo.
+Drop `dlls/` next to `phantom_elevator.py` to skip runtime compile.
 
 ---
 
@@ -730,8 +708,8 @@ Drop `dlls/` next to `phantom_elevator.py` to skip runtime compile. Copy `build_
 
 <div align="center">
 
-<a href="https://github.com/Hidden-Rhythm/abe_bypass">
-  <img src="https://img.shields.io/badge/EXE_Edition-abe__bypass-e11d48?style=for-the-badge&logo=windows&logoColor=white" alt="EXE Edition">
+<a href="https://github.com/Hidden-Rhythm/abe_bypass/releases/latest">
+  <img src="https://img.shields.io/badge/⬇️_Prebuilt_Exe-abe__bypass-e11d48?style=for-the-badge&logo=windows&logoColor=white" alt="Prebuilt Exe">
 </a>
 
 <a href="https://github.com/Hidden-Rhythm/obfuscator">
