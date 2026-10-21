@@ -21,7 +21,7 @@
 
 <br>
 
-[**🚀 Quickstart**](#quickstart) · [**🖥️ CLI**](#cli) · [**🌐 Browsers**](#browsers) · [**⚡ Bypass**](#bypass) · [**🛡️ Obfuscation**](#obfuscation) · [**⚠️ Limitations**](#limitations)
+[**⚠️ Authorized Use**](#authorized-use) · [**🚀 Quickstart**](#quickstart) · [**🖥️ CLI**](#cli) · [**🌐 Browsers**](#browsers) · [**⚡ Bypass**](#bypass) · [**🛡️ Obfuscation**](#obfuscation) · [**⚠️ Limitations**](#limitations)
 
 </div>
 
@@ -59,6 +59,42 @@ Scores every local-storage entry before writing. Wallets, tokens, and seed phras
 </td>
 </tr>
 </table>
+
+---
+
+<a id="authorized-use"></a>
+## ⚠️ Authorized Use Only
+
+<table>
+<tr>
+<td width="100%" valign="top">
+
+**✅ Legitimate uses**
+
+- Authorized penetration testing engagements with a signed scope
+- Red-team assessments of your own systems
+- Digital forensics on a device you own or have legal custody of
+- Incident response triage on a compromised endpoint
+- CTF challenges and security research on test machines you control
+- Personal account recovery on a machine you own
+
+**❌ Illegal uses**
+
+- Extracting credentials from any device you do not own
+- Any form of credential theft, account takeover, or unauthorized access
+- Deploying on a victim's machine, through malware, phishing, or social engineering
+- Commercial sale of extracted credentials
+- Any use that violates the Computer Fraud and Abuse Act, the Computer Misuse Act, GDPR, CFAA § 1030, or local law
+
+</td>
+</tr>
+</table>
+
+> 🚨 **YOU ARE RESPONSIBLE FOR YOUR OWN USE.** This software is published for authorized security research and educational analysis only. The author does **not** condone, support, or facilitate unauthorized access to computer systems. If you use Phantom Elevator against a system you are not explicitly authorized to test, **you** commit a crime and **you alone** bear the legal consequence.
+
+> 📜 **NO WARRANTY, NO LIABILITY.** This software is provided "as is", without warranty of any kind, express or implied. The author is not liable for any damages, legal action, or consequence arising from use or misuse. See [LICENSE](LICENSE).
+
+> 🤝 **REPORTING A VULNERABILITY.** If you are a browser vendor or security researcher who has found a flaw this tool touches, contact the author via Discord — responsible disclosure is welcome, abuse is not.
 
 ---
 
