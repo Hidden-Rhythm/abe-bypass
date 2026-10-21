@@ -36,9 +36,13 @@
 > [!TIP]
 > **Want a standalone `.exe` — no Python, no compiler on the target?**
 >
-> Download the prebuilt Windows binary from **[Hidden-Rhythm/abe_bypass releases](https://github.com/Hidden-Rhythm/abe_bypass/releases/latest)**.
+> Use **[Hidden-Rhythm/abe_bypass](https://github.com/Hidden-Rhythm/abe_bypass)** — that repo ships:
 >
-> Same tool, same CLI, same output. That repo also ships `build_dll.py` and `build_exe.py` if you want to build the exe yourself. This repo is the single-file Python edition.
+> - 🚀 **Prebuilt `phantom_elevator.exe`** — download from its [Releases](https://github.com/Hidden-Rhythm/abe_bypass/releases/latest) page
+> - 🔨 **`build_dll.py` + `build_exe.py`** — build the exe yourself from source
+> - 🧬 **`phantom_elevator.py`** — same tool, patched so ABE DLLs resolve from `dlls/` instead of compiling at runtime
+>
+> This repo is the single-file Python edition. That repo is the standalone-binary edition.
 
 ---
 
@@ -708,8 +712,12 @@ Drop `dlls/` next to `phantom_elevator.py` to skip runtime compile.
 
 <div align="center">
 
+<a href="https://github.com/Hidden-Rhythm/abe_bypass">
+  <img src="https://img.shields.io/badge/EXE_Edition-abe__bypass-e11d48?style=for-the-badge&logo=windows&logoColor=white" alt="EXE Edition">
+</a>
+
 <a href="https://github.com/Hidden-Rhythm/abe_bypass/releases/latest">
-  <img src="https://img.shields.io/badge/⬇️_Prebuilt_Exe-abe__bypass-e11d48?style=for-the-badge&logo=windows&logoColor=white" alt="Prebuilt Exe">
+  <img src="https://img.shields.io/badge/⬇️_Download_Latest-22c55e?style=for-the-badge&logo=github&logoColor=white" alt="Download Latest">
 </a>
 
 <a href="https://github.com/Hidden-Rhythm/obfuscator">
