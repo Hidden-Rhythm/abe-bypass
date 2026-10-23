@@ -343,9 +343,9 @@ out\
 
 ### 📄 Output files
 
-Default is `--format tsv`, which writes plain `.txt`.
+Default is `--format txt`, which writes plain `.txt`.
 
-| Artifact | Default (`tsv`) | `--format csv` | `--format json` |
+| Artifact | Default (`txt`) | `--format csv` | `--format json` |
 |:---|:---|:---|:---|
 | 🍪 Cookies | `cookies/<host>.txt` (Netscape) | `cookies.csv` | `cookies.json` |
 | 🔑 Passwords | `passwords/<domain>.txt` (TSV) | `passwords.csv` | `passwords.json` |
