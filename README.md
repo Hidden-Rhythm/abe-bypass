@@ -420,7 +420,7 @@ python phantom_elevator.py [OPTIONS]
 
 | Flag | Argument | Default | What it does |
 |:---|:---|:---|:---|
-| `--format` | `tsv` \| `json` \| `csv` \| `txt` | `tsv` | 🗄️ `tsv`/`txt` → plain `.txt`; `csv`/`json` → structured |
+| `--format` | `tsv` \| `json` \| `csv` \| `txt` | `txt` | 🗄️ `tsv`/`txt` → plain `.txt`; `csv`/`json` → structured |
 | `--important` | — | off | 💎 High-value targets only |
 | `--debug-drops` | — | off | 🔍 Skipped-entry breakdown with reasons and counts |
 | `--no-color` | — | off | ⚪ Disable ANSI; auto-on when stdout isn't a TTY |
