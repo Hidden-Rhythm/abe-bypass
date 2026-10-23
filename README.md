@@ -593,8 +593,6 @@ When prompted, provide the path to `phantom_elevator.py`. Accept the default out
 
 The obfuscator reports a SHA-256 build fingerprint and per-stage timings, so every hardened build is traceable to its source.
 
-> ⚠️ **Obfuscating breaks the runtime ABE compile path.** The generated code object can't be compiled to C by gcc at runtime. If you need ABE on an obfuscated build, drop a prebuilt `dlls/` folder beside the output — build it with `build_dll.py` from [abe_bypass](https://github.com/Hidden-Rhythm/abe_bypass).
-
 ---
 
 ## 🏗️ Architecture
